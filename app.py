@@ -1,91 +1,103 @@
-import time
-import random
 from flask import Flask, render_template, jsonify
-import yfinance as yf
-import pandas as pd
-from datetime import datetime, timedelta
+from flask_caching import Cache
 import csv
+import os
 import requests
-
+import dotenv
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+dotenv.load_dotenv()
 app = Flask(__name__)
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 60})
 def load_symbols():
-    with open('symbols.csv', 'r') as f:
-        reader = csv.reader(f)
-        next(reader)  # Skip the header
-        return [row[0] for row in reader]
+    try:
+        with open('symbols.csv', 'r') as f:
+            reader = csv.reader(f)
+            next(reader)
+            return [row[0] for row in reader]
+    except FileNotFoundError:
+        print("symbols.csv not found, using default symbols")
+        return list(symbol_to_instrument.keys())
 
 nifty50_symbols = load_symbols()
-
-
 symbol_to_instrument = {
+    "ADANIENT": "NSE_EQ|INE423A01024",
     "ADANIPORTS": "NSE_EQ|INE742F01042",
+    "APOLLOHOSP": "NSE_EQ|INE437A01024",
     "ASIANPAINT": "NSE_EQ|INE021A01026",
     "AXISBANK": "NSE_EQ|INE238A01034",
     "BAJAJ-AUTO": "NSE_EQ|INE917I01010",
-    "BAJFINANCE": "NSE_EQ|INE296A01024",
-    "BAJAJFINSV": "NSE_EQ|INE918I01018",
-    "BPCL": "NSE_EQ|INE029A01011",
+    "BAJFINANCE": "NSE_EQ|INE296A01032",  # Updated ISIN
+    "BAJAJFINSV": "NSE_EQ|INE918I01026",  # Updated ISIN
+    "BEL": "NSE_EQ|INE263A01024",         # New addition
     "BHARTIARTL": "NSE_EQ|INE397D01024",
-    "INFRATEL": "NSE_EQ|INE121J01017",
     "CIPLA": "NSE_EQ|INE059A01026",
     "COALINDIA": "NSE_EQ|INE522F01014",
-    "DRREDDY": "NSE_EQ|INE089A01023",
-    "EICHERMOT": "NSE_EQ|INE066A01013",
-    "GAIL": "NSE_EQ|INE129A01019",
+    "DRREDDY": "NSE_EQ|INE089A01031",     # Updated ISIN
+    "EICHERMOT": "NSE_EQ|INE066A01021",   # Updated ISIN
+    "ETERNAL": "NSE_EQ|INE758T01015",     # New addition
     "GRASIM": "NSE_EQ|INE047A01021",
     "HCLTECH": "NSE_EQ|INE860A01027",
-    "HDFCBANK": "NSE_EQ|INE040A01026",
+    "HDFCBANK": "NSE_EQ|INE040A01034",    # Updated ISIN
+    "HDFCLIFE": "NSE_EQ|INE795G01014",
     "HEROMOTOCO": "NSE_EQ|INE158A01026",
     "HINDALCO": "NSE_EQ|INE038A01020",
-    "HINDPETRO": "NSE_EQ|INE094A01015",
     "HINDUNILVR": "NSE_EQ|INE030A01027",
-    "HDFC": "NSE_EQ|INE001A01036",
-    "ITC": "NSE_EQ|INE154A01025",
     "ICICIBANK": "NSE_EQ|INE090A01021",
-    "IBULHSGFIN": "NSE_EQ|INE148I01020",
-    "IOC": "NSE_EQ|INE242A01010",
+    "ITC": "NSE_EQ|INE154A01025",
     "INDUSINDBK": "NSE_EQ|INE095A01012",
     "INFY": "NSE_EQ|INE009A01021",
+    "JSWSTEEL": "NSE_EQ|INE019A01038",
+    "JIOFIN": "NSE_EQ|INE758E01017",      # New addition
     "KOTAKBANK": "NSE_EQ|INE237A01028",
     "LT": "NSE_EQ|INE018A01030",
-    "LUPIN": "NSE_EQ|INE326A01037",
     "M&M": "NSE_EQ|INE101A01026",
     "MARUTI": "NSE_EQ|INE585B01010",
     "NTPC": "NSE_EQ|INE733E01010",
+    "NESTLEIND": "NSE_EQ|INE239A01024",   # Updated ISIN
     "ONGC": "NSE_EQ|INE213A01029",
     "POWERGRID": "NSE_EQ|INE752E01010",
     "RELIANCE": "NSE_EQ|INE002A01018",
+    "SBILIFE": "NSE_EQ|INE123W01016",
+    "SHRIRAMFIN": "NSE_EQ|INE721A01047",  # Updated ISIN
     "SBIN": "NSE_EQ|INE062A01020",
     "SUNPHARMA": "NSE_EQ|INE044A01036",
     "TCS": "NSE_EQ|INE467B01029",
+    "TATACONSUM": "NSE_EQ|INE192A01025",
     "TATAMOTORS": "NSE_EQ|INE155A01022",
-    "TATASTEEL": "NSE_EQ|INE081A01012",
+    "TATASTEEL": "NSE_EQ|INE081A01020",   # Updated ISIN
     "TECHM": "NSE_EQ|INE669C01036",
     "TITAN": "NSE_EQ|INE280A01028",
-    "UPL": "NSE_EQ|INE628A01036",
+    "TRENT": "NSE_EQ|INE849A01020",       # New addition
     "ULTRACEMCO": "NSE_EQ|INE481G01011",
-    "VEDL": "NSE_EQ|INE205A01025",
-    "WIPRO": "NSE_EQ|INE075A01022",
-    "YESBANK": "NSE_EQ|INE528G01027",
-    "ZEEL": "NSE_EQ|INE256A01028"
+    "WIPRO": "NSE_EQ|INE075A01022"
 }
 
 market_caps = {}
-with open('market_caps.csv', 'r') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        symbol = row['symbol']
-        try:
-            market_caps[symbol] = float(row['market_cap'])
-        except:
-            market_caps[symbol] = 0.0
+try:
+    with open('market_caps.csv', 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            symbol = row['symbol']
+            try:
+                market_caps[symbol] = float(row['market_cap'])
+            except (ValueError, KeyError):
+                market_caps[symbol] = 0.0
+except FileNotFoundError:
+    logger.warning("market_caps.csv not found, using default values")
+    for symbol in symbol_to_instrument.keys():
+        market_caps[symbol] = 100000.0 
 
-ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiIyS0FEWTIiLCJqdGkiOiI2ODVkNzYyYzEwMjRkODE0MjRjOTE0NzAiLCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNQbHVzUGxhbiI6ZmFsc2UsImlhdCI6MTc1MDk1NTU2NCwiaXNzIjoidWRhcGktZ2F0ZXdheS1zZXJ2aWNlIiwiZXhwIjoxNzUwOTc1MjAwfQ.-EEDSsRx3jkocDEXy-oIdxAPo90W2pQhkrQ1aXdzGXw"
+ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 
 def get_stock_data(symbols):
-    instrument_keys = [symbol_to_instrument[s] for s in symbols if s in symbol_to_instrument]
-
+    valid_symbols = [s.upper() for s in symbols if s.upper() in symbol_to_instrument]
+    if not valid_symbols:
+        logger.warning("No valid symbols found in symbol_to_instrument mapping")
+        return []
+    instrument_keys = [symbol_to_instrument[symbol] for symbol in valid_symbols]
     url = 'https://api.upstox.com/v2/market-quote/ohlc'
     headers = {
         'Accept': 'application/json',
@@ -95,41 +107,53 @@ def get_stock_data(symbols):
         'instrument_key': ",".join(instrument_keys),
         'interval': '1d'
     }
-
     try:
         response = requests.get(url, headers=headers, params=params)
         if response.status_code != 200:
-            print(f"Upstox API error: {response.status_code}")
+            logger.error(f"Upstox API error: {response.status_code}")
             return []
         data = response.json()
+        if "data" not in data:
+            logger.warning("No 'data' key in response")
+            return []
         result = []
-
-        for key, details in data["data"].items():
+        for api_key, details in data["data"].items():
             instrument_token = details.get("instrument_token")
-            symbol = next((sym for sym, k in symbol_to_instrument.items() if k == instrument_token), None)
+            if not instrument_token:
+                logger.warning(f"No instrument_token found for API key: {api_key}")
+                continue
+            symbol = None
+            for sym, token in symbol_to_instrument.items():
+                if token == instrument_token:
+                    symbol = sym
+                    break
             if not symbol:
                 continue
 
             ohlc_data = details.get("ohlc", {})
             close = ohlc_data.get("close")
-            prev_close = ohlc_data.get("open")
+            open_price = ohlc_data.get("open")
             
-            if close is None or prev_close is None or prev_close == 0:
+            if close is None or open_price is None or open_price == 0:
                 continue
 
-            change_percent = ((close - prev_close) / prev_close) * 100
+            change_percent = ((close - open_price) / open_price) * 100
             market_cap = market_caps.get(symbol, 0)
+            
             result.append({
                 'name': f"{symbol}|{close:.2f}|{change_percent:.2f}%",
                 'value': float(market_cap),
                 'colorValue': float(change_percent),
                 'image': f'/static/images/nifty50_icons/{symbol}.svg'
             })
-        print(result)
+            
         return result
 
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Request exception in get_stock_data: {e}")
+        return []
     except Exception as e:
-        print(f"Exception in get_stock_data: {e}")
+        logger.error(f"General exception in get_stock_data: {e}")
         return []
 
 @app.route('/')
@@ -137,11 +161,24 @@ def index():
     return render_template('index.html')
 
 @app.route('/get_data')
+@cache.cached()
 def get_data():
     results = get_stock_data(nifty50_symbols)
-    print(results)
-    results.sort(key=lambda x: x['value'], reverse=True)
+    if results:
+        results.sort(key=lambda x: x['value'], reverse=True)
     return jsonify(results)
+
+@app.route('/debug')
+def debug():
+    """Debug endpoint to check symbol mapping"""
+    debug_info = {
+        'loaded_symbols': nifty50_symbols,
+        'symbol_to_instrument_keys': len(symbol_to_instrument),
+        'market_caps_loaded': len(market_caps),
+        'valid_symbols': [s for s in nifty50_symbols if s.upper() in symbol_to_instrument],
+        'invalid_symbols': [s for s in nifty50_symbols if s.upper() not in symbol_to_instrument]
+    }
+    return jsonify(debug_info)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5005, debug=True)

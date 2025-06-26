@@ -1,0 +1,58 @@
+2025-06-27 04:14:48,236 - __main__ - INFO - Loaded 50 symbols from CSV
+2025-06-27 04:14:48,237 - __main__ - INFO - Loaded market caps for 50 symbols
+2025-06-27 04:15:22,247 - __main__ - INFO - Loaded 50 symbols from CSV
+2025-06-27 04:15:22,248 - __main__ - INFO - Loaded market caps for 50 symbols
+2025-06-27 04:15:22,319 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5005
+ * Running on http://192.168.83.201:5005
+2025-06-27 04:15:22,319 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-27 04:15:30,262 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:15:30] "GET / HTTP/1.1" 200 -
+2025-06-27 04:15:30,394 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:15:30] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-27 04:15:30,395 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:15:30] "[36mGET /static/js/heatmap.js HTTP/1.1[0m" 304 -
+2025-06-27 04:15:30,437 - __main__ - ERROR - Error in get_data: type object 'Config' has no attribute 'MAX_RETRIES'
+2025-06-27 04:15:30,437 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:15:30] "[35m[1mGET /get_data HTTP/1.1[0m" 500 -
+2025-06-27 04:16:56,391 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:16:56] "GET / HTTP/1.1" 200 -
+2025-06-27 04:16:56,477 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:16:56] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-27 04:16:56,484 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:16:56] "[36mGET /static/js/heatmap.js HTTP/1.1[0m" 304 -
+2025-06-27 04:16:56,491 - __main__ - ERROR - Error in get_data: type object 'Config' has no attribute 'MAX_RETRIES'
+2025-06-27 04:16:56,505 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:16:56] "[35m[1mGET /get_data HTTP/1.1[0m" 500 -
+2025-06-27 04:17:06,188 - __main__ - INFO - Shutting down gracefully...
+2025-06-27 04:17:08,063 - __main__ - INFO - Loaded 50 symbols from CSV
+2025-06-27 04:17:08,064 - __main__ - INFO - Loaded market caps for 50 symbols
+2025-06-27 04:17:08,075 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5005
+ * Running on http://192.168.83.201:5005
+2025-06-27 04:17:08,075 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-27 04:17:12,105 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:17:12] "GET / HTTP/1.1" 200 -
+2025-06-27 04:17:12,195 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:17:12] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-27 04:17:12,199 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:17:12] "[36mGET /static/js/heatmap.js HTTP/1.1[0m" 304 -
+2025-06-27 04:17:12,218 - __main__ - ERROR - Error in get_data: type object 'Config' has no attribute 'API_TIMEOUT'
+2025-06-27 04:17:12,218 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:17:12] "[35m[1mGET /get_data HTTP/1.1[0m" 500 -
+2025-06-27 04:18:28,523 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:28] "GET / HTTP/1.1" 200 -
+2025-06-27 04:18:28,599 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:28] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-27 04:18:28,602 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:28] "[36mGET /static/js/heatmap.js HTTP/1.1[0m" 304 -
+2025-06-27 04:18:28,606 - __main__ - ERROR - Error in get_data: type object 'Config' has no attribute 'API_TIMEOUT'
+2025-06-27 04:18:28,610 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:28] "[35m[1mGET /get_data HTTP/1.1[0m" 500 -
+2025-06-27 04:18:35,045 - __main__ - INFO - Shutting down gracefully...
+2025-06-27 04:18:37,033 - __main__ - INFO - Loaded 50 symbols from CSV
+2025-06-27 04:18:37,033 - __main__ - INFO - Loaded market caps for 50 symbols
+2025-06-27 04:18:37,050 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5005
+ * Running on http://192.168.83.201:5005
+2025-06-27 04:18:37,050 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-27 04:18:39,340 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:39] "GET / HTTP/1.1" 200 -
+2025-06-27 04:18:39,412 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:39] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-27 04:18:39,418 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:39] "[36mGET /static/js/heatmap.js HTTP/1.1[0m" 304 -
+2025-06-27 04:18:39,842 - __main__ - INFO - Data fetched in 0.40s, 50 stocks
+2025-06-27 04:18:39,845 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:39] "GET /get_data HTTP/1.1" 200 -
+2025-06-27 04:18:46,877 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:46] "GET / HTTP/1.1" 200 -
+2025-06-27 04:18:46,911 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:46] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-27 04:18:46,923 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:46] "[36mGET /static/js/heatmap.js HTTP/1.1[0m" 304 -
+2025-06-27 04:18:47,039 - __main__ - INFO - Data fetched in 0.10s, 50 stocks
+2025-06-27 04:18:47,040 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:47] "GET /get_data HTTP/1.1" 200 -
+2025-06-27 04:18:52,431 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:52] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-27 04:18:52,435 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 04:18:52] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-27 04:19:25,307 - __main__ - INFO - Shutting down gracefully...
