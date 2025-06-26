@@ -1,0 +1,28 @@
+body {
+    background-color: #121212;  /* Dark background color */
+    color: #ffffff;  /* Light text color for contrast */
+    margin: 0;
+    padding: 0;
+}
+.circle-img {
+    border-radius: 50%;
+}
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #121212;
+    color: #ffffff;
+}
+
+#container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.circle-img {
+    border-radius: 50%;
+    display: block;
+}
+
