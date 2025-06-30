@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, request
 from flask_caching import Cache
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, cast, Date
+from pathlib import Path
 import logging
 import dotenv
 import os
@@ -105,6 +106,10 @@ def get_previous_close_map():
 
 def get_stock_data(symbols):
     """Fetch live stock data and compute % change and heatmap value"""
+    dotenv.load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=True)
+    jwt_token = os.getenv("ANGEL_JWT_TOKEN")
+    if not jwt_token or len(jwt_token) < 100:
+        logger.warning("JWT token seems missing or invalid!")
     headers = {
         'Authorization': f'Bearer {jwt_token}',
         'Content-Type': 'application/json',
