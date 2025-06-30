@@ -106,7 +106,7 @@ def get_previous_close_map():
 
 def get_stock_data(symbols):
     """Fetch live stock data and compute % change and heatmap value"""
-    dotenv.load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=True)
+    dotenv.load_dotenv("/app/.env", override=True)
     jwt_token = os.getenv("ANGEL_JWT_TOKEN")
     if not jwt_token or len(jwt_token) < 100:
         logger.warning("JWT token seems missing or invalid!")
