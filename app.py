@@ -2,7 +2,6 @@ from flask import Flask, render_template, jsonify, request
 from flask_caching import Cache
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, cast, Date
-from pathlib import Path
 import logging
 import dotenv
 import os
@@ -18,12 +17,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 dotenv.load_dotenv()
-jwt_token = os.getenv("ANGEL_JWT_TOKEN")
 db_url = os.getenv("DATABASE_URL")
-
-if not jwt_token or not db_url:
-    logger.critical("Missing essential environment variables. Exiting.")
-    exit(1)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
@@ -40,6 +34,23 @@ class HistoricalData1D(db.Model):
     symbol = db.Column(db.String, nullable=False)
     closePrice = db.Column(db.Float, nullable=False)
     date = db.Column(db.DateTime(timezone=True), nullable=False)
+
+class SystemToken(db.Model):
+    __tablename__ = 'SystemToken'
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(100), unique=True, nullable=False)
+    value = db.Column(db.Text, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+def get_jwt_token():
+    try:
+        token = db.session.query(SystemToken.value).filter_by(key="ANGEL_JWT_TOKEN").scalar()
+        if not token:
+            logger.warning("JWT token not found in DB.")
+        return token
+    except Exception as e:
+        logger.error(f"Failed to load JWT from DB: {e}")
+        return None
 
 symbol_to_instrument = {
     "ADANIENT": "NSE_EQ|25", "ADANIPORTS": "NSE_EQ|15083", "APOLLOHOSP": "NSE_EQ|157",
@@ -88,27 +99,40 @@ except FileNotFoundError:
         market_caps[s] = 100_000.0
 
 def get_previous_close_map():
-    """Returns map of {symbol: previous_close_price} for last trading day"""
+    """Returns map of {symbol: closePrice} for the most recent trading day before today."""
     try:
+        today = datetime.now().date()
         date_col = cast(HistoricalData1D.date, Date)
-        dates = db.session.query(date_col.label("trading_date")).distinct().order_by(date_col.desc()).limit(2).all()
-        if len(dates) < 2:
+
+        prev_trading_date = (
+            db.session.query(func.max(date_col))
+            .filter(date_col < today)
+            .scalar()
+        )
+
+        if not prev_trading_date:
+            logger.warning("No previous trading date found in DB.")
             return {}
 
-        prev_date = dates[1].trading_date
+        logger.info(f"Using previous trading date: {prev_trading_date}")
+
         rows = db.session.query(HistoricalData1D.symbol, HistoricalData1D.closePrice).filter(
-            cast(HistoricalData1D.date, Date) == prev_date
+            cast(HistoricalData1D.date, Date) == prev_trading_date
         ).all()
-        return {r.symbol.upper(): r.closePrice for r in rows}
+
+        result = {r.symbol.upper(): r.closePrice for r in rows}
+        if not result:
+            logger.warning(f"No close data found for date: {prev_trading_date}")
+        return result
+
     except Exception as e:
         logger.error(f"Error fetching previous close: {e}")
         return {}
 
+
 def get_stock_data(symbols):
     """Fetch live stock data and compute % change and heatmap value"""
-    jwt_token = os.getenv("ANGEL_JWT_TOKEN")
-    if not jwt_token or len(jwt_token) < 100:
-        logger.warning("JWT token seems missing or invalid!")
+    jwt_token = get_jwt_token()
     headers = {
         'Authorization': f'Bearer {jwt_token}',
         'Content-Type': 'application/json',
@@ -142,6 +166,7 @@ def get_stock_data(symbols):
             symbol = item["tradingSymbol"].replace("-EQ", "")
             ltp = item.get("ltp")
             prev = previous_closes.get(symbol)
+            print(prev)
             if ltp is None or prev is None or prev == 0:
                 continue
 
@@ -168,7 +193,6 @@ def index():
 def get_data():
     """Endpoint for heatmap data"""
     logger.info("Accessed '/get_data' route - attempting to fetch stock data")
-
     data = get_stock_data(nifty50_symbols)
     count = len(data)
 
