@@ -21,10 +21,10 @@ TOTP_SECRET = os.getenv("ANGEL_TOTP_SECRET")
 LOCAL_IP = os.getenv("LOCAL_IP", "127.0.0.1")
 PUBLIC_IP = os.getenv("PUBLIC_IP", "127.0.0.1")
 MAC_ADDRESS = os.getenv("MAC_ADDRESS", "00:11:22:33:44:55")
-name = os.getenv("DBNAME")
+name = os.getenv("DB_NAME")
 dbuser = os.getenv("DB_USER")
-passw = os.getenv("PASS")
-hst = os.getenv("HOST")
+passw = os.getenv("DB_PASSWORD")
+hst = os.getenv("DB_HOST")
 prt = os.getenv("DB_PORT")
 
 def update_jwt_in_db(token):
