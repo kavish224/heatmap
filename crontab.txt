@@ -1,0 +1,1 @@
+0 3 * * * root python /smart_api.py >> /var/log/cron.log 2>&1
